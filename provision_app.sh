@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DEBIAN_FRONTEND=noninteractive
+# export DEBIAN_FRONTEND=noninteractive
 
 # Provisioning for app VM
 # Update and Upgrade the VM

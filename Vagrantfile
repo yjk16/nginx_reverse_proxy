@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     app.vm.synced_folder "app", "/home/vagrant/app"
     
     # Provision the VM to have Nginx
-    app.vm.provision "shell", path: "provision_app.sh"
+    app.vm.provision "shell", path: "provision_app.sh,"
   end
 
   # Configuring db (database) settings
