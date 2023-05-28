@@ -12,8 +12,6 @@ Proxies act as intermediaries between users and servers.
 
 The main difference between a forward proxy and a reverse proxy is that a forward proxy masks the original IP address so can help with security for the user whereas the reverse proxy does the opposite as is used to protect web servers as well as help with overloading.
 
-![alt](proxy.png)
-
 ----
 
 ### What is Nginx's default configuration?
@@ -159,4 +157,64 @@ The port number is no longer included.
 To automate the process, make sure your provision files include the added commands.
 
 So provision_app.sh:
+
+#!/bin/bash
+
+# Provisioning for app VM
+# Update and Upgrade the VM
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+# Install Nginx
+sudo apt-get install nginx -y
+sudo systemctl start nginx -y
+
+# Install Python Properties
+sudo apt-get install python-software-properties -y
+
+# Install NodeJS
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install pm2 globally
+sudo npm install pm2 -g
+
+# The following do manually after cd-ing into relevant app folder:
+# npm install
+# node app.js
+
+# change the necessary details for the reverse proxy
+new_file="
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name 192.168.10.100;
+
+        location / {
+                proxy_pass http://localhost:3000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+        location /posts {
+                proxy_pass http://localhost:3000/posts;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+    }
+}
+"
+new_file > /etc/nginx/sites-available/default
+
+----
 
